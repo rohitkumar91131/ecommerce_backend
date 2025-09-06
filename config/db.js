@@ -3,12 +3,13 @@ import mongoose from "mongoose";
 dotenv.config();
 connectToDb()
 .then(()=>{
-    console.log("Connected with database")
+    console.log("Connected with database ")
 })
 .catch((err)=>{
     console.log(err || "Error in db connection")
 })
 
 async function connectToDb() {
-    await mongoose.connect(process.env.MONGO_URL)
+    await mongoose.connect("mongodb://127.0.0.1:27017/ecommerce");
 }
+

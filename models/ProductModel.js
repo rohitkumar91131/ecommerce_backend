@@ -7,9 +7,12 @@ const productSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    image: {
+    imageUrl: {
       type: String,
       required: true,
+    },
+    base64Url:{
+      type : String
     },
     description: {
       type: String,
