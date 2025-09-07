@@ -19,6 +19,7 @@ export const getAllProducts = async (req, res) => {
 };
 
 
+
 export const filterProducts = async (req, res) => {
   try {
     const { category, query, minPrice, maxPrice } = req.body;
@@ -37,11 +38,17 @@ export const filterProducts = async (req, res) => {
         { description: { $regex: query, $options: "i" } }
       );
 
-      // Extract all numbers from query string
       const numbers = query.match(/\d+(\.\d+)?/g);
       if (numbers) {
         numbers.forEach((num) => {
-          orConditions.push({ price: parseFloat(num) });
+          orConditions.push({
+            $expr: {
+              $regexMatch: {
+                input: { $toString: "$price" },
+                regex: num,
+              },
+            },
+          });
         });
       }
     }
