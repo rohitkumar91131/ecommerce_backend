@@ -17,3 +17,50 @@ export const getAllProducts = async (req, res) => {
     });
   }
 };
+
+
+export const filterProducts = async (req, res) => {
+  try {
+    const { category, query, minPrice, maxPrice } = req.body;
+
+    const mongoQuery = {};
+
+    if (category && category !== "All Categories") {
+      mongoQuery.category = category;
+    }
+
+    const orConditions = [];
+
+    if (query && query.trim() !== "") {
+      orConditions.push(
+        { name: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } }
+      );
+
+      // Extract all numbers from query string
+      const numbers = query.match(/\d+(\.\d+)?/g);
+      if (numbers) {
+        numbers.forEach((num) => {
+          orConditions.push({ price: parseFloat(num) });
+        });
+      }
+    }
+
+    if (orConditions.length > 0) {
+      mongoQuery.$or = orConditions;
+    }
+
+    if (minPrice != null || maxPrice != null) {
+      mongoQuery.price = mongoQuery.price || {};
+      if (minPrice != null) mongoQuery.price.$gte = minPrice;
+      if (maxPrice != null) mongoQuery.price.$lte = maxPrice;
+    }
+
+    const products = await Product.find(mongoQuery).limit(50);
+
+    res.status(200).json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

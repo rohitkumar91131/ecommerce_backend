@@ -10,7 +10,7 @@ dotenv.config();
 
 
 //let updatedProducts = [];
-
+let i = 1;
 await Product.deleteMany({}).then((res)=>console.log(res))
 for (const product of sampleProducts) {
   const base64Url = await getBase64(product.image);
@@ -22,6 +22,7 @@ for (const product of sampleProducts) {
     price : product.price,
     base64Url 
   })
+  console.log(i++);
 }
 
 
